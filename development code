@@ -1,0 +1,60 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.preprocessing import StandardScaler
+# Load the dataset
+url = 'https://raw.githubusercontent.com/datasciencedojo/datasets/master/AmesHousing.csv'
+df = pd.read_csv(url)
+
+# Display the first few rows of the dataset
+print(df.head())
+
+# Check for missing values
+print(df.isnull().sum())
+# Drop columns that are not useful for prediction
+df = df.drop(['Id', 'Alley', 'PoolQC', 'Fence', 'MiscFeature'], axis=1)
+
+# Fill missing numerical values with the median
+numerical_cols = df.select_dtypes(include=['float64']).columns
+df[numerical_cols] = df[numerical_cols].fillna(df[numerical_cols].median())
+
+# Fill missing categorical values with the mode
+categorical_cols = df.select_dtypes(include=['object']).columns
+df[categorical_cols] = df[categorical_cols].fillna(df[categorical_cols].mode().iloc[0])
+
+# Convert categorical variables to dummy variables
+df = pd.get_dummies(df, drop_first=True)
+
+# Separate features and target variable
+X = df.drop('SalePrice', axis=1)
+y = df['SalePrice']
+# Split the dataset into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Standardize the features
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+# Initialize and train the linear regression model
+model = LinearRegression()
+model.fit(X_train_scaled, y_train)
+# Predict on the test set
+y_pred = model.predict(X_test_scaled)
+# Calculate evaluation metrics
+mae = mean_absolute_error(y_test, y_pred)
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+
+print(f'Mean Absolute Error: {mae}')
+print(f'Mean Squared Error: {mse}')
+print(f'Root Mean Squared Error: {rmse}')
+# Plot actual vs predicted prices
+plt.figure(figsize=(10, 6))
+sns.scatterplot(x=y_test, y=y_pred)
+plt.title('Actual vs Predicted Prices')
+plt.xlabel('Actual Prices')
+plt.ylabel('Predicted Prices')
+plt.show()
