@@ -1,0 +1,7 @@
+| Metric             | Value    |                     |
+| ------------------ | -------- | ------------------- |
+| **R² (R-squared)** | 0.967    |                     |
+| **RMSE**           | \$20,128 |                     |
+| **MAE**            | \$9,777  | ([James Dargan][1]) |
+
+[1]: https://jamesdargan.github.io/pages/AMES/03_linear_models.html?utm_source=chatgpt.com "AMES Housing Regression (Repo) | James Dargan"
